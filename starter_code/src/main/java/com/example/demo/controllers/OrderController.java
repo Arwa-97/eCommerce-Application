@@ -31,23 +31,23 @@ public class OrderController {
 
 	@PostMapping("/submit/{username}")
 	public ResponseEntity<UserOrder> submit(@PathVariable String username) {
-		log.info("submit user order with username", username);
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
-			log.debug("user is null");
+			log.error("user is null - submit order fails");
 			return ResponseEntity.notFound().build();
 		}
 		UserOrder order = UserOrder.createFromCart(user.getCart());
 		orderRepository.save(order);
+		log.info("OrderController - submit user order succeed with username "+ username);
 		return ResponseEntity.ok(order);
 	}
 	
 	@GetMapping("/history/{username}")
 	public ResponseEntity<List<UserOrder>> getOrdersForUser(@PathVariable String username) {
-		log.info("find user order with username", username);
+		log.info("OrderController - find user order with username "+ username);
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
-			log.debug("user is null");
+			log.error("OrderController - user is null");
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.ok(orderRepository.findByUser(user));
